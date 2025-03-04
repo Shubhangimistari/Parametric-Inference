@@ -1,0 +1,314 @@
+---
+title: 'Topic 4: Plotting of Likelihhod function and MLE'
+author: "Shubhangi Mistari"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+**Q.1**
+Generate a random sample of size 50 from $Poisson(\lambda=2.8)$ distribution. Plot a likelihood function against different values of $\lambda$
+and check whether likelihood function attains maxima at 
+$1)\bar{X}$
+2) 2.8
+```{r}
+set.seed(123)
+n=50;lambda=2.8 
+x=rpois(n,lambda)
+lambda_=seq(1.5,4.5,length.out=500) #different values of lambda
+like_func= function(lambda_) {
+  exp(-n*lambda_)*lambda_^sum(x)
+}
+plot(lambda_,like_func(lambda_),main="Likelihood function plot for poisson distribution",
+     xlab = "values of lambda_",ylab="Likelihood function")
+abline(v=mean(x),col="black")
+abline(v=2.8,col="green")
+cat("MLE of lambda is",mean(x),"\n")
+
+
+neg_like_func= function(lambda_) { 
+  -exp(-n*lambda_)*lambda_^sum(x)
+}
+
+nlm(neg_like_func,2.5)
+
+optimize(f=neg_like_func,interval = c(0,5))
+
+optimize(f=like_func,interval = c(0,5),maximum = T)
+
+
+```
+
+Log likelihood 
+```{r}
+set.seed(123)
+n=50;lambda=2.8 
+x=rpois(n,lambda)
+lambda_=seq(1.5,4.5,length.out=500) #different values of lambda
+log_like_func= function(lambda_) {
+  -n*lambda_+sum(x)*log(lambda_)
+}
+plot(lambda_,log_like_func(lambda_),main="Log likelihood function plot for poisson distribution",
+     xlab = "values of lambda_",ylab="Log likelihood function")
+abline(v=mean(x),col="black")
+abline(v=2.8,col="green")
+cat("MLE of lambda is",mean(x),"\n")
+
+
+neg_log_like_func= function(lambda_) {
+   -(-n*lambda_+sum(x)*log(lambda_))
+}
+nlm(neg_log_like_func,2.5)
+
+optimize(f=neg_log_like_func,interval = c(0,5))
+
+optimize(f=log_like_func,interval = c(0,5),maximum = T)
+
+```
+
+
+**Q.2**
+Generate a random sample of size 50 from $Burnoulli(p=0.6)$ distribution. Plot a likelihood function against different values of $p$
+and check whether likelihood function attains maxima at 
+$1)\bar{X}$
+2) 0.6
+```{r}
+set.seed(123)
+n=50;p=0.6 
+x=rpois(n,p)
+p_=seq(0.3,0.9,length.out=500) #different values of lambda
+like_func= function(p_) {
+  p_^sum(x)*(1-p_)^(n-sum(x))
+}
+plot(p_,like_func(p_),main="Likelihood function plot for Burnoulli distribution",
+     xlab = "values of p_",ylab="Likelihood function")
+abline(v=mean(x),col="black")
+abline(v=0.6,col="green")
+cat("MLE of p is",mean(x),"\n")
+
+```
+
+
+
+
+**Q.3**
+Generate a random sample of size 50 from $N(\mu=4.6,\sigma^2=1)$ distribution. Plot a likelihood function for
+1) Different values of$\mu$ when $\sigma=1$ known and check whether likelihood function attains maxima at 
+a) $\bar{X}$
+b)  4.6
+```{r}
+set.seed(123)
+mu=4.6
+sigma2=1
+n=50
+x=rnorm(50,4.6,1)
+mu_=seq(3,6,length.out=500)
+likelihood= function(mu_){
+  exp(-0.5*((n*mu_^2)-(2*mu_*sum(x))))
+}
+plot(mu_,likelihood(mu_),main="Likelihood function plot for Normal dist (sigma known)",
+     xlab = "values of mu_",ylab=" Likelihood function")
+abline(v=mean(x),col="black")
+abline(v=4.6,col="green")
+cat("MLE of mu is",mean(x),"\n")
+```
+
+
+2) Different values of$\sigma$ when $\mu=4.6$ known and check whether likelihood function attains maxima at
+a)$1/n\sum(Xi-\bar{X})$
+b)$1$
+```{r}
+set.seed(123)
+mu=4.6;sigma2=1;n=50
+x=rnorm(50,4.6,1)
+sigma_2=seq(0,01.5,length.out=1000)
+likelihood= function(sigma_){
+  ((1/(2*pi*sigma_2))^n/2)*exp(-(0.5/sigma_2)*sum((x-4.6)^2))
+}
+plot(sigma_2,likelihood(sigma_2),main="Likelihood function plot for Normal dist (mu known)",
+     xlab = "values of mu_",ylab=" Likelihood function")
+abline(v=((n-1)/n)*var(x),col="pink")
+abline(v=(1/n)*sum((x-4.6)^2),col="black")
+abline(v=1,col="green")
+cat("MLE of sigma2 is (population variance) is :",1/n*sum((x-4.6)^2),"\n")
+```
+
+**Q.4**
+Generate a random sample of size 50 from $Exponential(mean=\theta=15.2)$ distribution. Plot a likelihood function against different values of $\theta$ and check whether likelihood function attains maxima at 
+$1)\bar{X}$
+2) 15.2
+```{r}
+set.seed(123)
+theta=15.2
+n=50
+x=rexp(50,1/15.2)
+theta_=seq(5,30,length.out=500)
+likelihood= function(theta_){
+  (1/theta_)^n*exp(-sum(x)/theta_)
+}
+plot(theta_,likelihood(theta_),main="Likelihood function plot for Exp(mean=15.2) dist ",
+     xlab = "values of theta_",ylab=" Likelihood function")
+abline(v=mean(x),col="black")
+abline(v=15.2,col="green")
+cat("MLE of theta is",mean(x),"\n")
+```
+
+
+
+
+
+**Q.5**
+Consider the following random sample of size 10 Generated from $U(0,\theta), \theta>0$ distribution. 
+2.06874,5.82498,2.65698,3.58650,2.78196,1.36005,4.49083,5.74037,3.41361,1.36519.  Plot a likelihood function and cheak
+whether likelihood function attains maxima at 
+a) $2\bar{X}$
+b) $X_{(n)}$
+```{r}
+theta=seq(3,8,length.out=1000)
+x=c(2.06874,5.82498,2.65698,3.58650,2.78196,1.36005,4.49083,5.74037,3.41361,1.36519)
+likelihood=function(theta){
+  (1/theta)^n*ifelse(max(x)<theta,1,0)
+}
+plot(theta,likelihood(theta),main="Likehood function plot for uniform distribution",
+     xlab="theta",ylab="Likelihood function")
+abline(v=2*mean(x),col="red")
+abline(v=max(x),col="black") 
+cat("mle of theta is",max(x),"\n")
+```
+
+
+
+
+
+
+**Q.6**
+Generate a random sample of size 50 from $Cauchy(\mu,1)$ distribution. Use Newton Raphson method and method of scoring to find MLE of $\mu$.
+
+```{r}
+#newton raphson 
+set.seed(12)
+n=50;mu=2.8
+x=rcauchy(n,mu,1)
+
+v=c(median(x),rep(0,9)) #9 for 10 iterations
+
+
+for(i in 1:length(v)){
+  y=x-v[i]
+  d_11=2*sum(y/(1+y^2))     #dlogL/dmu
+  d_12=-2*sum(1-y^2/(1+y^2)^2)    
+  v[i+1]=v[i]-d_11/d_12
+  
+}
+print(v)
+```
+
+
+```{r}
+#Method of scoring
+set.seed(12)
+n=50;mu=2.8
+x=rcauchy(n,mu,1)
+
+u=c(median(x),rep(0,9)) #9 for 10 iterations
+
+I_x=1/2
+
+for(i in 1:length(u)){
+  y=x-u[i]
+  d_1=2*sum(y/(1+y^2))    #dlogL/dmu
+  u[i+1]=u[i]+d_1/n*I_x
+  
+}
+u
+```
+
+
+**Q.7**
+Generate a random sample of size 50 from $E(\theta,1)$ distribution. Plot a likelihood function against different values of $\theta$ and check whether likelihood function attains maxima at 
+a) $\bar{X}-1$
+b) $X_{(1)}$
+```{r}
+set.seed(123)
+theta=1.1
+n=50
+theta_=seq(0.8,1.2,length.out=1000)
+y=runif(n,0,1)
+x=theta-log(1-y)
+
+likelihood= function(theta_){
+  exp(-sum(x)+n*theta_)*ifelse(theta_<min(x),1,0)
+}
+plot(theta_,likelihood(theta_),main="Likehood function plot for Exp(theta,1) distribution",
+     xlab="theta",ylab="Likelihood function")
+abline(v=mean(x)-1,col="red")
+abline(v=min(x),col="black")
+cat("mle of theta is",min(x),"\n")
+```
+
+**Q.8**
+Generate a random sample of size 50 from $Normal(\mu,1)$ distribution. Use Newton Raphson method and method of scoring to find MLE of $\mu$.
+
+```{r}
+# Newton Raphson
+set.seed(123)
+n=50;mu=1
+x=rnorm(n,mu,2)
+v=c(median(x),rep(0,9)) #9 for 10 iterations
+
+for(i in 1:length(v)){
+  
+  d_11=n*(mean(x)-v[i] )    #dlogL/dmu
+  d_12=-n
+  v[i+1]=v[i]-d_11/d_12
+  
+}
+print(v)
+```
+
+```{r}
+#Method of scoring
+set.seed(12)
+n=50;mu=2.8
+x=rnorm(n,mu,1)
+
+u=c(median(x),rep(0,9)) #9 for 10 iterations
+
+I_x=1
+
+for(i in 1:length(u)){
+  
+  d_1=n*(mean(x)-u[i]) #dlogL/dmu
+  u[i+1]=u[i]+d_1/n*I_x
+  
+}
+u
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

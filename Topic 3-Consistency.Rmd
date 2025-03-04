@@ -1,0 +1,129 @@
+---
+title: 'Topic 3: Consistency'
+author: "Shubhangi Mistari"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+**Q.1**
+```{r}
+rm(list=ls())
+set.seed(123)
+n=c(50,100,300,700,1000,8000,9000,15000)
+
+est_prob1=est_prob2=est_prob3=numeric(length(n))
+esp=0.01  #epsilon
+
+for (i in 1:length(n)){
+  x=matrix(rnorm(1000*n[i],2,1),nrow = 1000,ncol=n[i])
+  
+  x_bar=apply(x,1,mean)
+  sam_median=apply(x,1,median)
+  sam_var=apply(x,1,var)
+  
+  est_prob1[[i]]=mean(abs(x_bar-2)<0.01)
+  est_prob2[[i]]=mean(abs(sam_median-2)<0.01)
+  est_prob3[[i]]=mean(abs(sam_var-1)<0.01)
+}
+cbind(n, est_prob1, est_prob2, est_prob3)
+
+```
+From output we conclude that sample mean converges at a faster rate as compare to sample median as sample size increases.
+
+
+
+**Q.2**
+```{r}
+rm(list=ls())
+set.seed(123)
+n=c(50,100,300,700,1000,8000,9000,15000)
+
+est_prob1=est_prob2=numeric(length(n))
+esp=0.01  #epsilon
+
+for (i in 1:length(n)){
+  x=matrix(runif(1000*n[i],0,1),nrow = 1000,ncol=n[i])
+  
+  x_bar=apply(x,1,mean)
+  T1=2* x_bar
+  T2=apply(x,1,max)
+  
+  est_prob1[[i]]=mean(abs(T1-1)<0.01)
+  est_prob2[[i]]=mean(abs(T2-1)<0.01)
+  
+}
+cbind(n, est_prob1, est_prob2)
+```
+From output we conclude that $X_{(n)}$ converges at a faster rate as compare to $2\bar{X}$ as sample size increases.
+
+
+
+**Q.3**
+```{r}
+rm(list=ls())
+set.seed(123)
+n=c(50,100,300,700,1000,1200)
+mu=2
+
+est_prob1=est_prob2=numeric(length(n))
+esp=0.01  #epsilon
+
+for (i in 1:length(n)){
+  y=matrix(runif(1000*n[i],0,1),nrow = 1000,ncol=n[i])
+  x=mu-log(1-y)
+  
+  T1=apply(x,1,min)
+  x_bar=apply(x,1,mean)
+  T2=x_bar-1
+  
+  est_prob1[[i]]=mean(abs(T1-mu)<0.01)
+  est_prob2[[i]]=mean(abs(T2-mu)<0.01)
+  
+}
+cbind(n, est_prob1, est_prob2)
+```
+From output we conclude that $X_{(1)}$ converges at a faster rate as compare to $\bar{X}-1$ as sample size increases.
+
+
+
+**Q.4**
+```{r}
+n=c(50,100,500,700,900,1200,15000)
+est_prob1=est_prob2=numeric(length(n))
+theta=1.5
+
+for (i in 1:length(n)){
+  y=matrix(runif(1000*n[i],0,1),nrow = 1000,ncol=n[i])
+  x=1/(1-y)^(1/theta)
+  
+  x_bar=apply(x,1,mean)
+  T1=x_bar/(x_bar-1)
+  
+  sum_log_x=apply(log(x),1,sum)
+  T2=n[i]/sum_log_x
+  
+  est_prob1[[i]]=mean(abs(T1-theta)<0.01)
+  est_prob2[[i]]=mean(abs(T2-theta)<0.01)
+}
+cbind(n,est_prob1,est_prob2)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
